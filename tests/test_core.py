@@ -1,7 +1,7 @@
 import random
 
-from decameron.paragraphs import build_paragraphs, paragraph_spans, sentence_ends
-from decameron.transcript import Segment, timed_words
+from decameron.paragraphs import build_paragraphs, paragraph_spans, paragraphs_from_segments, sentence_ends
+from decameron.segments import spoken_words
 
 from conftest import SAMPLE_SEGMENTS
 
@@ -26,14 +26,12 @@ def test_short_tail_joins_previous_paragraph():
     assert spans[-1][1] - spans[-1][0] >= 1
 
 
-def test_timed_words_marks_long_pauses():
-    timed = timed_words(SAMPLE_SEGMENTS)
-    assert timed.words[:3] == ["Hola,", "buenos", "días."]
-    assert timed.times[0] == 0.0 and timed.times[-1] == 9.0
-    assert timed.pause_after == {len("Hola, buenos días. Hoy vamos a probar la herramienta.".split()) - 1}
+def test_spoken_words_marks_long_pauses():
+    spoken = spoken_words(SAMPLE_SEGMENTS)
+    assert spoken.words[:3] == ["Hola,", "buenos", "días."]
+    assert spoken.pause_after == {len("Hola, buenos días. Hoy vamos a probar la herramienta.".split()) - 1}
 
 
-def test_segment_round_trip():
-    segment = Segment(1.0, 2.5, "Hola.")
-    assert Segment.from_dict(segment.to_dict()) == segment
-    assert Segment.from_dict({"start": "1", "end": "2.5", "text": "Hola."}) == segment
+def test_paragraphs_from_segments_keeps_every_word():
+    paragraphs = paragraphs_from_segments(SAMPLE_SEGMENTS, random.Random(0))
+    assert " ".join(paragraphs).split() == " ".join(s.text for s in SAMPLE_SEGMENTS).split()

@@ -1,6 +1,7 @@
+from dataclasses import dataclass
 from pathlib import Path
 
-from decameron.transcript import Segment
+from decameron.segments import Segment
 
 MODELS = ("tiny", "base", "small", "medium", "large-v3", "turbo")
 DEFAULT_MODEL = "medium"
@@ -23,6 +24,12 @@ def default_prompt(language: str | None) -> str | None:
     return DEFAULT_PROMPTS.get((language or "").lower())
 
 
+@dataclass(frozen=True)
+class Transcription:
+    segments: list[Segment]
+    language: str
+
+
 class WhisperEngine:
     def __init__(self, download_root: Path | None = None) -> None:
         self._download_root = download_root
@@ -43,7 +50,7 @@ class WhisperEngine:
         language: str | None = DEFAULT_LANGUAGE,
         prompt: str | None = None,
         verbose: bool = False,
-    ) -> list[Segment]:
+    ) -> Transcription:
         whisper_model = self.load(model)
         result = whisper_model.transcribe(
             str(audio),
@@ -56,4 +63,4 @@ class WhisperEngine:
             Segment(round(piece["start"], 2), round(piece["end"], 2), piece["text"].strip())
             for piece in result["segments"]
         ]
-        return [segment for segment in segments if segment.text]
+        return Transcription([segment for segment in segments if segment.text], result["language"])

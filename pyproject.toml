@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "decameron-whisper-tools"
+version = "0.2.0"
+description = "Transcribe audio with Whisper and export the transcript as a PDF in paragraphs."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "VBalaguera" }]
+dependencies = [
+    "openai-whisper>=20240930",
+    "fpdf2>=2.8",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+decameron-transcribe = "decameron.transcribe:main"
+
+[project.urls]
+Repository = "https://github.com/VBalaguera/decameron-whisper-tools"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/decameron"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

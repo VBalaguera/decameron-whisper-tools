@@ -3,6 +3,8 @@ import re
 from collections.abc import Collection, Sequence
 from dataclasses import dataclass
 
+from decameron.segments import Segment, spoken_words
+
 CLOSERS = "\"'”’»)]"
 SENTENCE_END = re.compile(rf"[.!?…][{re.escape(CLOSERS)}]*$")
 CLAUSE_END = re.compile(rf"[,;:][{re.escape(CLOSERS)}]*$")
@@ -113,3 +115,10 @@ def build_paragraphs(
     return [
         " ".join(words[a:b]) for a, b in paragraph_spans(words, pause_after, rng, rules)
     ]
+
+
+def paragraphs_from_segments(
+    segments: Sequence[Segment], rng: random.Random | None = None
+) -> list[str]:
+    spoken = spoken_words(segments)
+    return build_paragraphs(spoken.words, spoken.pause_after, rng)

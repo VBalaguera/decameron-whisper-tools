@@ -1,4 +1,4 @@
-from decameron.transcript import Segment
+from decameron.segments import Segment
 
 SAMPLE_SEGMENTS = [
     Segment(0.0, 3.0, "Hola, buenos días."),

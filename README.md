@@ -8,7 +8,7 @@
 
 decameron-whisper-tools transcribes audio with OpenAI's **Whisper** on your own computer. Recordings never leave your machine.
 
-It includes a terminal command, `decameron-transcribe`, which turns audio into a PDF.
+It includes a terminal command, `decameron-transcribe`, which turns audio into a PDF, and a web page that does the same from the browser.
 
 ### Requirements
 
@@ -17,6 +17,7 @@ It includes a terminal command, `decameron-transcribe`, which turns audio into a
   - macOS: `brew install ffmpeg`
   - Linux (Debian or Ubuntu): `sudo apt install ffmpeg`
   - Windows: `winget install ffmpeg`
+- For the web page only: Node.js 20.19 or later.
 
 ### Install
 
@@ -70,11 +71,48 @@ The first time you use a model it is downloaded automatically (75 MB to 3 GB dep
 
 Supported audio formats: mp3, m4a, wav, flac, ogg, opus, aac, wma, aiff, webm, mp4, mkv, mov, avi, mpeg, amr.
 
+### Web page
+
+The web page transcribes one audio at a time and gives you the PDF to download. It has two parts that run on your computer: a server, `decameron-web`, which runs Whisper, and the page itself, in the `web` folder.
+
+Install them once:
+
+```bash
+pip install -e ".[web]"
+cd web
+npm install
+```
+
+Then, every time you want to use it, start the server in one terminal:
+
+```bash
+decameron-web
+```
+
+And the page in another one, from the `web` folder:
+
+```bash
+npm run dev
+```
+
+Open http://localhost:5173, choose an audio file, the model, the language and, if you want, a title, and press **Transcribir**. The page shows that it is working until the PDF is ready, and then a link to download it. Each segment is printed in the server's terminal as Whisper recognises it, just like with the command.
+
+The PDF is the same as the one the command makes, with the same header and the audio file's own date. The server keeps nothing: it saves the audio and the PDF in a temporary folder and deletes them as soon as it has sent the PDF.
+
+The server only accepts connections from your own computer (`127.0.0.1`, port 8000), and it transcribes one audio at a time.
+
 ### Tests
 
 ```bash
 pip install -e ".[dev]"
 pytest -q
+```
+
+To check the web page, from the `web` folder:
+
+```bash
+npm run lint
+npm run build
 ```
 
 ---
@@ -83,7 +121,7 @@ pytest -q
 
 decameron-whisper-tools transcribe audio con **Whisper**, de OpenAI, en tu propio ordenador. Las grabaciones nunca salen de él.
 
-Incluye un comando de terminal, `decameron-transcribe`, que convierte un audio en un PDF.
+Incluye un comando de terminal, `decameron-transcribe`, que convierte un audio en un PDF, y una página web que hace lo mismo desde el navegador.
 
 ### Requisitos
 
@@ -92,6 +130,7 @@ Incluye un comando de terminal, `decameron-transcribe`, que convierte un audio e
   - macOS: `brew install ffmpeg`
   - Linux (Debian o Ubuntu): `sudo apt install ffmpeg`
   - Windows: `winget install ffmpeg`
+- Solo para la página web: Node.js 20.19 o posterior.
 
 ### Instalación
 
@@ -145,9 +184,46 @@ La primera vez que usas un modelo se descarga solo (entre 75 MB y 3 GB según el
 
 Formatos de audio admitidos: mp3, m4a, wav, flac, ogg, opus, aac, wma, aiff, webm, mp4, mkv, mov, avi, mpeg, amr.
 
+### Página web
+
+La página web transcribe un audio cada vez y te da el PDF para descargarlo. Tiene dos partes que se ejecutan en tu ordenador: un servidor, `decameron-web`, que ejecuta Whisper, y la página, en la carpeta `web`.
+
+Se instalan una sola vez:
+
+```bash
+pip install -e ".[web]"
+cd web
+npm install
+```
+
+Después, cada vez que quieras usarla, arranca el servidor en una terminal:
+
+```bash
+decameron-web
+```
+
+Y la página en otra, desde la carpeta `web`:
+
+```bash
+npm run dev
+```
+
+Abre http://localhost:5173, elige un archivo de audio, el modelo, el idioma y, si quieres, un título, y pulsa **Transcribir**. La página indica que está trabajando hasta que el PDF está listo y después muestra un enlace para descargarlo. Cada segmento aparece en la terminal del servidor en cuanto Whisper lo reconoce, igual que con el comando.
+
+El PDF es el mismo que crea el comando, con la misma cabecera y la fecha propia del audio. El servidor no conserva nada: guarda el audio y el PDF en una carpeta temporal y los borra en cuanto ha enviado el PDF.
+
+El servidor solo acepta conexiones desde tu propio ordenador (`127.0.0.1`, puerto 8000) y transcribe un audio cada vez.
+
 ### Pruebas
 
 ```bash
 pip install -e ".[dev]"
 pytest -q
+```
+
+Para comprobar la página web, desde la carpeta `web`:
+
+```bash
+npm run lint
+npm run build
 ```

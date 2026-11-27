@@ -45,7 +45,9 @@ Each segment is printed as soon as Whisper recognises it, with its start and end
 [00:05.000 --> 00:08.000]  Today we are going to try the tool.
 ```
 
-When it finishes, the transcript is saved as a PDF next to the audio, with the same name (`interview.pdf`), arranged in readable paragraphs without changing a single word. If that file already exists, it is overwritten.
+When it finishes, the transcript is saved as a PDF next to the audio, with the same name (`interview.pdf`), arranged in readable paragraphs without changing a single word. With `--output`, it is saved in that folder instead.
+
+If the PDF already exists, the command asks whether to overwrite it before transcribing. If you answer no, or if it is not run from an interactive terminal, that audio is skipped.
 
 The PDF opens with a header: the title (the audio file name without its extension, unless you pass `--title`) and a short record with the audio file name, the audio file's date, the date of the transcription, the model and the language.
 
@@ -62,6 +64,7 @@ decameron-transcribe class.mp3 note.m4a
 | `--model` | `medium` | Whisper model: `tiny`, `base`, `small`, `medium`, `large-v3` or `turbo`. Larger models are more accurate but slower. |
 | `--language` | `es` | Language code such as `es` or `en`, or `auto` to let Whisper detect it. |
 | `--title` | file name | Title at the top of the PDF. With several files, all of them get the same title. |
+| `--output` | next to the audio | Folder where the PDFs are saved. It is created if it does not exist. |
 
 The first time you use a model it is downloaded automatically (75 MB to 3 GB depending on the model). After that it is read from disk.
 
@@ -117,7 +120,9 @@ Cada segmento aparece en cuanto Whisper lo reconoce, con su inicio y su fin, par
 [00:05.000 --> 00:08.000]  Hoy vamos a probar la herramienta.
 ```
 
-Al terminar, la transcripción se guarda en un PDF junto al audio, con el mismo nombre (`entrevista.pdf`), organizada en párrafos legibles sin cambiar ninguna palabra. Si ese archivo ya existe, se sobrescribe.
+Al terminar, la transcripción se guarda en un PDF junto al audio, con el mismo nombre (`entrevista.pdf`), organizada en párrafos legibles sin cambiar ninguna palabra. Con `--output`, se guarda en esa carpeta.
+
+Si el PDF ya existe, el comando pregunta si quieres sobrescribirlo antes de transcribir. Si respondes que no, o si no se ejecuta desde una terminal interactiva, se salta ese audio.
 
 El PDF empieza con una cabecera: el título (el nombre del audio sin la extensión, salvo que pases `--title`) y una ficha con el nombre del archivo, la fecha del audio, la fecha de la transcripción, el modelo y el idioma.
 
@@ -134,6 +139,7 @@ decameron-transcribe clase.mp3 nota.m4a
 | `--model` | `medium` | Modelo de Whisper: `tiny`, `base`, `small`, `medium`, `large-v3` o `turbo`. Los más grandes aciertan más pero tardan más. |
 | `--language` | `es` | Código de idioma, como `es` o `en`, o `auto` para que Whisper lo detecte. |
 | `--title` | nombre del archivo | Título al principio del PDF. Con varios archivos, todos reciben el mismo título. |
+| `--output` | junto al audio | Carpeta donde se guardan los PDF. Se crea si no existe. |
 
 La primera vez que usas un modelo se descarga solo (entre 75 MB y 3 GB según el modelo). Después se lee del disco.
 

@@ -22,7 +22,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="decameron-transcribe",
         description="Transcribe audio files with Whisper and save each transcript "
-        "as a PDF in paragraphs, next to its audio.",
+        "as a PDF in paragraphs, next to its audio or in the folder given with --output.",
     )
     parser.add_argument("audio", nargs="+", type=Path, help="Audio file(s) to transcribe")
     parser.add_argument(
@@ -36,6 +36,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--title", help="Title shown at the top of the PDF (default: the audio file name without its extension)"
     )
+    parser.add_argument(
+        "--output", type=Path, help="Folder where the PDFs are saved, created if needed (default: next to each audio)"
+    )
     return parser
 
 
@@ -45,6 +48,23 @@ def audio_problem(audio: Path) -> str | None:
     if audio.suffix.lower() not in AUDIO_EXTENSIONS:
         return f"'{audio.name}' is not a supported audio file."
     return None
+
+
+def output_path(audio: Path, folder: Path | None) -> Path:
+    return (folder or audio.parent) / f"{audio.stem}.pdf"
+
+
+def confirm_overwrite(path: Path) -> bool:
+    if not path.exists():
+        return True
+    if not sys.stdin.isatty():
+        print(f"Skipped: '{path}' already exists.", file=sys.stderr)
+        return False
+    try:
+        answer = input(f"'{path}' already exists. Overwrite? [y/N] ")
+    except EOFError:
+        return False
+    return answer.strip().lower() in ("y", "yes")
 
 
 def language_label(requested: str | None, detected: str) -> str:
@@ -62,14 +82,13 @@ def pdf_details(audio: Path, model: str, language: str) -> list[tuple[str, str]]
 
 
 def transcribe_to_pdf(
-    engine: WhisperEngine, audio: Path, model: str, language: str | None, title: str | None = None
+    engine: WhisperEngine, audio: Path, output: Path, model: str, language: str | None, title: str | None = None
 ) -> Path | None:
     transcription = engine.transcribe(
         audio, model=model, language=language, prompt=default_prompt(language), verbose=True
     )
     if not transcription.segments:
         return None
-    output = audio.with_suffix(".pdf")
     save_pdf(
         paragraphs_from_segments(transcription.segments),
         output,
@@ -82,6 +101,12 @@ def transcribe_to_pdf(
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     language = None if args.language.lower() == "auto" else args.language
+    if args.output:
+        try:
+            args.output.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            print(f"Error: cannot use '{args.output}' as the output folder: {e}", file=sys.stderr)
+            return 1
     engine = WhisperEngine()
     failures = 0
     for audio in args.audio:
@@ -90,9 +115,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"Error: {problem}", file=sys.stderr)
             failures += 1
             continue
+        output = output_path(audio, args.output)
+        try:
+            if not confirm_overwrite(output):
+                continue
+        except KeyboardInterrupt:
+            print("\nCancelled.", file=sys.stderr)
+            return 130
         print(f"\n{audio.name} (model {args.model}, language {language or 'auto'})", flush=True)
         try:
-            output = transcribe_to_pdf(engine, audio, args.model, language, args.title)
+            saved = transcribe_to_pdf(engine, audio, output, args.model, language, args.title)
         except KeyboardInterrupt:
             print("\nCancelled.", file=sys.stderr)
             return 130
@@ -100,10 +132,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"Error transcribing '{audio.name}': {e}", file=sys.stderr)
             failures += 1
             continue
-        if output is None:
+        if saved is None:
             print(f"Warning: no speech found in '{audio.name}'. Nothing was saved.", file=sys.stderr)
         else:
-            print(f"Saved: {output}", flush=True)
+            print(f"Saved: {saved}", flush=True)
     return 1 if failures else 0
 
 

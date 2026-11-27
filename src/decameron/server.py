@@ -1,4 +1,5 @@
 import os
+import shutil
 import tempfile
 import threading
 from pathlib import Path
@@ -33,11 +34,12 @@ def create_app(engine: WhisperEngine) -> FastAPI:
         if model not in MODELS:
             raise HTTPException(400, f"Unknown model '{model}'.")
         name = Path(audio.filename or "").name
-        if not name:
-            raise HTTPException(400, "The audio file has no name.")
+        if name in ("", ".."):
+            raise HTTPException(400, "The audio file has no valid name.")
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / name
-            path.write_bytes(audio.file.read())
+            with path.open("wb") as target:
+                shutil.copyfileobj(audio.file, target)
             problem = audio_problem(path)
             if problem:
                 raise HTTPException(400, problem)

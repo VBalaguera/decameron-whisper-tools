@@ -1,0 +1,145 @@
+:root {
+  --bg: #171717;
+  --text: #33ff00;
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-size: 16px;
+  color-scheme: dark;
+}
+
+:root[data-font='vt323'] {
+  --font: 'VT323', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-size: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--font-size);
+  line-height: 1.6;
+}
+
+main {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 4rem 1rem;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+label {
+  display: grid;
+  gap: 0.25rem;
+}
+
+label.file {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px dashed var(--text);
+  cursor: pointer;
+}
+
+label.file input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+label.file:focus-within {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+input,
+select,
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--text);
+  padding: 0.5rem 0.75rem;
+}
+
+input::placeholder {
+  color: var(--text);
+  opacity: 0.5;
+}
+
+button {
+  justify-self: start;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+button:not(:disabled):hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status {
+  margin-top: 2rem;
+}
+
+.status p,
+.status a {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  color: var(--text);
+}
+
+.status svg {
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+  }
+}
+
+footer {
+  margin-top: 4rem;
+  opacity: 0.6;
+  font-size: 0.875rem;
+}

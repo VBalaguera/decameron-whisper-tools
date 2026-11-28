@@ -15,10 +15,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "pypdf>=5.0"]
+web = ["fastapi>=0.115", "uvicorn>=0.30", "python-multipart>=0.0.9"]
+dev = ["pytest>=8", "pypdf>=5.0", "httpx2>=2.14", "decameron-whisper-tools[web]"]
 
 [project.scripts]
 decameron-transcribe = "decameron.transcribe:main"
+decameron-web = "decameron.server:main"
 
 [project.urls]
 Repository = "https://github.com/VBalaguera/decameron-whisper-tools"
